@@ -1,0 +1,189 @@
+.side-nav-trigger {
+  position: fixed;
+  top: 1.25rem;
+  left: 1.25rem;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.68rem 0.92rem;
+  border-radius: 14px;
+  background: rgba(11, 16, 30, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.78), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color 200ms ease, background 200ms ease, transform 200ms ease;
+}
+
+.side-nav-trigger:hover {
+  border-color: rgba(34, 211, 238, 0.42);
+  background: rgba(16, 24, 44, 0.85);
+}
+
+.side-nav-trigger-label {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.side-nav-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 48;
+  background: rgba(3, 6, 14, 0.64);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.side-nav-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 50;
+  width: min(320px, 86vw);
+  display: flex;
+  flex-direction: column;
+  padding: 1.35rem 1.15rem;
+  background: linear-gradient(
+    165deg,
+    rgba(13, 20, 38, 0.9) 0%,
+    rgba(6, 9, 19, 0.94) 100%
+  );
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 18px 0 48px -14px rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(var(--blur-drawer));
+  -webkit-backdrop-filter: blur(var(--blur-drawer));
+}
+
+.side-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0.35rem 1.1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.side-nav-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.side-nav-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.side-nav-close:hover {
+  color: var(--text-primary);
+  border-color: rgba(56, 189, 248, 0.35);
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.side-nav-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.side-nav-link {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.72rem 0.85rem;
+  border-radius: 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.side-nav-link:hover {
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--text-primary);
+  transform: translateX(3px);
+}
+
+.side-nav-link.is-active {
+  background: linear-gradient(
+    90deg,
+    rgba(34, 211, 238, 0.14) 0%,
+    rgba(59, 130, 246, 0.08) 100%
+  );
+  border-color: rgba(34, 211, 238, 0.32);
+  color: #f8fafc;
+}
+
+.side-nav-link-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.72rem;
+  font-size: 0.93rem;
+  font-weight: 500;
+}
+
+.side-nav-index {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.side-nav-link.is-active .side-nav-index {
+  color: var(--accent-cyan);
+}
+
+.side-nav-footer {
+  padding-top: 1rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+@media (max-width: 640px) {
+  .side-nav-trigger {
+    top: 0.9rem;
+    left: 0.9rem;
+    padding: 0.62rem 0.78rem;
+  }
+
+  .side-nav-trigger-label {
+    display: none;
+  }
+
+  .side-nav-drawer {
+    width: min(300px, 84vw);
+    padding: 1.15rem 1rem;
+  }
+}
+

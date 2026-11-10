@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" fill="none">
+  <defs>
+    <linearGradient id="p1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1526" />
+      <stop offset="100%" stop-color="#050811" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="480" rx="18" fill="url(#p1)" />
+  <circle cx="620" cy="110" r="140" fill="#22d3ee" fill-opacity="0.08" />
+  <rect x="70" y="76" width="660" height="328" rx="16" fill="#0f172a" fill-opacity="0.6" stroke="#38bdf8" stroke-opacity="0.2" />
+  <rect x="104" y="112" width="180" height="24" rx="6" fill="#22d3ee" fill-opacity="0.2" />
+  <rect x="104" y="160" width="180" height="200" rx="12" fill="#1e293b" fill-opacity="0.65" stroke="#ffffff" stroke-opacity="0.08" />
+  <rect x="310" y="160" width="180" height="200" rx="12" fill="#1e293b" fill-opacity="0.65" stroke="#ffffff" stroke-opacity="0.08" />
+  <rect x="516" y="160" width="180" height="200" rx="12" fill="#1e293b" fill-opacity="0.65" stroke="#38bdf8" stroke-opacity="0.3" />
+  <circle cx="660" cy="124" r="14" fill="#38bdf8" fill-opacity="0.25" stroke="#38bdf8" stroke-opacity="0.6" />
+  <text x="104" y="428" fill="#64748b" font-family="JetBrains Mono, monospace" font-size="12">DEEPKART // E-COMMERCE INTERFACE VISUAL</text>
+</svg>
+

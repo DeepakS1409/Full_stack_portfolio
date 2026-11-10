@@ -1,0 +1,46 @@
+:root {
+  /* Core Dark Palette */
+  --bg-obsidian: #05070d;
+  --bg-navy: #080c17;
+  --bg-charcoal: #0d1322;
+  --bg-surface: rgba(13, 19, 34, 0.56);
+  --bg-surface-elevated: rgba(17, 25, 45, 0.72);
+
+  /* Text Hierarchy */
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  /* Subtle Accent Lighting */
+  --accent-cyan: #22d3ee;
+  --accent-blue: #3b82f6;
+  --accent-violet: #8b5cf6;
+  --accent-cyan-soft: rgba(34, 211, 238, 0.14);
+  --accent-blue-soft: rgba(59, 130, 246, 0.14);
+  --accent-violet-soft: rgba(139, 92, 246, 0.14);
+
+  /* Glass Borders & Shadows */
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-hover: rgba(148, 163, 184, 0.24);
+  --glass-highlight: rgba(255, 255, 255, 0.05);
+  --shadow-glass: 0 18px 45px -18px rgba(0, 0, 0, 0.75);
+  --shadow-elevated: 0 24px 60px -20px rgba(2, 6, 23, 0.88);
+
+  /* Typography */
+  --font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* Layout & Spacing */
+  --container-max: 1180px;
+  --section-py: clamp(4.5rem, 8vw, 7rem);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  /* Performance-conscious blur levels */
+  --blur-glass: 14px;
+  --blur-drawer: 18px;
+}
+
