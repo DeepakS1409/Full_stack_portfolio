@@ -3,11 +3,17 @@ import { BookOpen, Compass, Cpu, GraduationCap } from 'lucide-react';
 import { fadeSlideUp, viewportOnce } from '@/animations/motionPresets';
 import { GlassCard } from '@/components/GlassCard';
 import { SectionHeader } from '@/components/SectionHeader';
+import { usePortfolioQuery } from '@/hooks/usePortfolioQuery';
+import { isSupabaseConfigured } from '@/lib/supabase';
 import { portfolioService } from '@/services/portfolio.service';
 import './sections.css';
 
 export function AboutSection() {
-  const profile = portfolioService.getProfile();
+  const { data: profile } = usePortfolioQuery(
+    portfolioService.getProfile,
+    portfolioService.getFallbackProfile(),
+    isSupabaseConfigured,
+  );
 
   return (
     <section id="about" className="section-wrapper">

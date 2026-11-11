@@ -15,6 +15,7 @@ export default defineConfig({
         manualChunks: {
           three: ['three'],
           motion: ['framer-motion'],
+          supabase: ['@supabase/supabase-js'],
         },
       },
     },

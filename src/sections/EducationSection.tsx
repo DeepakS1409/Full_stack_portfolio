@@ -1,11 +1,17 @@
 import { Calendar, CheckCircle2, GraduationCap, MapPin } from 'lucide-react';
 import { GlassCard } from '@/components/GlassCard';
 import { SectionHeader } from '@/components/SectionHeader';
+import { usePortfolioQuery } from '@/hooks/usePortfolioQuery';
+import { isSupabaseConfigured } from '@/lib/supabase';
 import { portfolioService } from '@/services/portfolio.service';
 import './sections.css';
 
 export function EducationSection() {
-  const educationList = portfolioService.getEducation();
+  const { data: educationList } = usePortfolioQuery(
+    portfolioService.getEducation,
+    portfolioService.getFallbackEducation(),
+    isSupabaseConfigured,
+  );
 
   return (
     <section id="education" className="section-wrapper">

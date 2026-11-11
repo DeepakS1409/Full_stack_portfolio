@@ -24,7 +24,7 @@ export function CertificatesSection() {
   const [searchQuery, setSearchQuery] = useState('');
   const [status, setStatus] = useState<FetchStatus>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [dataSource, setDataSource] = useState<'local-data' | 'remote-api'>('local-data');
+  const [dataSource, setDataSource] = useState<'local-data' | 'supabase' | 'remote-api'>('local-data');
   const [selectedCertificate, setSelectedCertificate] = useState<Certificate | null>(null);
 
   const loadCertificates = useCallback(async () => {

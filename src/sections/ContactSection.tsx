@@ -1,7 +1,20 @@
 import { useState, type FormEvent } from 'react';
-import { AlertTriangle, ExternalLink, Github, Info, Linkedin, Mail, Send } from 'lucide-react';
+import {
+  AlertTriangle,
+  CheckCircle2,
+  ExternalLink,
+  Github,
+  Info,
+  Linkedin,
+  Loader2,
+  Mail,
+  Send,
+} from 'lucide-react';
 import { GlassCard } from '@/components/GlassCard';
 import { SectionHeader } from '@/components/SectionHeader';
+import { usePortfolioQuery } from '@/hooks/usePortfolioQuery';
+import { isSupabaseConfigured } from '@/lib/supabase';
+import { submitContactMessage } from '@/services/contact.service';
 import { portfolioService } from '@/services/portfolio.service';
 import './sections.css';
 
@@ -10,6 +23,7 @@ interface ContactFormValues {
   email: string;
   subject: string;
   message: string;
+  website: string; // invisible honeypot
 }
 
 interface ContactFormErrors {
@@ -22,16 +36,25 @@ interface ContactFormErrors {
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function ContactSection() {
-  const profile = portfolioService.getProfile();
+  const { data: profile } = usePortfolioQuery(
+    portfolioService.getProfile,
+    portfolioService.getFallbackProfile(),
+    isSupabaseConfigured,
+  );
 
   const [values, setValues] = useState<ContactFormValues>({
     name: '',
     email: '',
     subject: '',
     message: '',
+    website: '',
   });
   const [errors, setErrors] = useState<ContactFormErrors>({});
-  const [submitNotice, setSubmitNotice] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitState, setSubmitState] = useState<{
+    kind: 'success' | 'warning' | 'error';
+    text: string;
+  } | null>(null);
 
   const validate = (form: ContactFormValues): ContactFormErrors => {
     const nextErrors: ContactFormErrors = {};
@@ -50,27 +73,58 @@ export function ContactSection() {
     return nextErrors;
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const validationErrors = validate(values);
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
-      setSubmitNotice(null);
+      setSubmitState(null);
       return;
     }
 
-    const mailtoSubject = encodeURIComponent(`[Portfolio] ${values.subject.trim()}`);
-    const mailtoBody = encodeURIComponent(
-      `Name: ${values.name.trim()}\nEmail: ${values.email.trim()}\n\n${values.message.trim()}`,
-    );
-    const mailtoHref = `mailto:${profile.emailPlaceholder}?subject=${mailtoSubject}&body=${mailtoBody}`;
+    if (!isSupabaseConfigured) {
+      const mailtoSubject = encodeURIComponent(`[Portfolio] ${values.subject.trim()}`);
+      const mailtoBody = encodeURIComponent(
+        `Name: ${values.name.trim()}\nEmail: ${values.email.trim()}\n\n${values.message.trim()}`,
+      );
+      const targetEmail = profile.emailPlaceholder || 'deepaks.portfolio@example.com';
+      setSubmitState({
+        kind: 'warning',
+        text: 'Supabase backend environment variables are not configured in this build. Opening your email client via mailto fallback instead of faking database delivery.',
+      });
+      window.location.href = `mailto:${targetEmail}?subject=${mailtoSubject}&body=${mailtoBody}`;
+      return;
+    }
 
-    setSubmitNotice(
-      'Direct backend form delivery is not configured in this frontend-only phase. Opening your default mail client via mailto fallback.',
-    );
+    setSubmitting(true);
+    setSubmitState(null);
 
-    window.location.href = mailtoHref;
+    try {
+      await submitContactMessage({
+        name: values.name,
+        email: values.email,
+        subject: values.subject,
+        message: values.message,
+        website: values.website,
+      });
+
+      setValues({ name: '', email: '', subject: '', message: '', website: '' });
+      setSubmitState({
+        kind: 'success',
+        text: 'Your message has been securely delivered and stored. Thank you for reaching out!',
+      });
+    } catch (err) {
+      setSubmitState({
+        kind: 'error',
+        text:
+          err instanceof Error
+            ? err.message
+            : 'Unable to send your message right now. Please try again later.',
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -101,7 +155,9 @@ export function ContactSection() {
                     lineHeight: 1.65,
                   }}
                 >
-                  Frontend phase active. Once backend APIs are connected later, this form can route directly to a server endpoint.
+                  {isSupabaseConfigured
+                    ? 'Messages are validated server-side, spam-checked, and stored securely in a private admin inbox.'
+                    : 'Configure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to enable persistent backend contact storage.'}
                 </p>
               </div>
 
@@ -184,8 +240,9 @@ export function ContactSection() {
               >
                 <Info size={17} color="var(--accent-cyan)" style={{ flexShrink: 0, marginTop: '2px' }} />
                 <span>
-                  Backend submission is intentionally not configured yet. Submitting validates your input and prepares a{' '}
-                  <code>mailto:</code> draft instead of faking delivery.
+                  {isSupabaseConfigured
+                    ? 'Private contact messages are protected by Row Level Security and never exposed publicly.'
+                    : 'Backend environment variables are not set yet, so submission falls back transparently to your email client.'}
                 </span>
               </div>
             </div>
@@ -193,7 +250,21 @@ export function ContactSection() {
 
           {/* Right Form Card */}
           <GlassCard accent="violet" style={{ padding: '1.6rem' }}>
-            <form onSubmit={handleSubmit} noValidate style={{ display: 'grid', gap: '1rem' }}>
+            <form onSubmit={(e) => void handleSubmit(e)} noValidate style={{ display: 'grid', gap: '1rem' }}>
+              {/* Invisible honeypot input for bot mitigation */}
+              <div className="sr-only" aria-hidden="true">
+                <label htmlFor="contact-website">Website</label>
+                <input
+                  id="contact-website"
+                  name="website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={values.website}
+                  onChange={(e) => setValues({ ...values, website: e.target.value })}
+                />
+              </div>
+
               <div
                 style={{
                   display: 'grid',
@@ -222,6 +293,7 @@ export function ContactSection() {
                     placeholder="Your name"
                     className="glass-input"
                     aria-invalid={Boolean(errors.name)}
+                    disabled={submitting}
                   />
                   {errors.name && (
                     <span style={{ display: 'block', marginTop: '0.3rem', fontSize: '0.78rem', color: '#fca5a5' }}>
@@ -251,6 +323,7 @@ export function ContactSection() {
                     placeholder="you@example.com"
                     className="glass-input"
                     aria-invalid={Boolean(errors.email)}
+                    disabled={submitting}
                   />
                   {errors.email && (
                     <span style={{ display: 'block', marginTop: '0.3rem', fontSize: '0.78rem', color: '#fca5a5' }}>
@@ -281,6 +354,7 @@ export function ContactSection() {
                   placeholder="Project inquiry, collaboration, or feedback"
                   className="glass-input"
                   aria-invalid={Boolean(errors.subject)}
+                  disabled={submitting}
                 />
                 {errors.subject && (
                   <span style={{ display: 'block', marginTop: '0.3rem', fontSize: '0.78rem', color: '#fca5a5' }}>
@@ -311,6 +385,7 @@ export function ContactSection() {
                   className="glass-input"
                   style={{ resize: 'vertical', minHeight: '112px' }}
                   aria-invalid={Boolean(errors.message)}
+                  disabled={submitting}
                 />
                 {errors.message && (
                   <span style={{ display: 'block', marginTop: '0.3rem', fontSize: '0.78rem', color: '#fca5a5' }}>
@@ -319,23 +394,42 @@ export function ContactSection() {
                 )}
               </div>
 
-              {submitNotice && (
+              {submitState && (
                 <div
-                  role="status"
+                  role={submitState.kind === 'error' ? 'alert' : 'status'}
                   style={{
                     display: 'flex',
                     alignItems: 'flex-start',
                     gap: '0.55rem',
                     padding: '0.8rem 0.95rem',
                     borderRadius: '10px',
-                    background: 'rgba(251, 191, 36, 0.08)',
-                    border: '1px solid rgba(251, 191, 36, 0.28)',
+                    background:
+                      submitState.kind === 'success'
+                        ? 'rgba(34, 211, 238, 0.1)'
+                        : submitState.kind === 'error'
+                          ? 'rgba(248, 113, 113, 0.1)'
+                          : 'rgba(251, 191, 36, 0.08)',
+                    border:
+                      submitState.kind === 'success'
+                        ? '1px solid rgba(34, 211, 238, 0.3)'
+                        : submitState.kind === 'error'
+                          ? '1px solid rgba(248, 113, 113, 0.3)'
+                          : '1px solid rgba(251, 191, 36, 0.28)',
                     fontSize: '0.84rem',
-                    color: '#fde68a',
+                    color:
+                      submitState.kind === 'success'
+                        ? '#a5f3fc'
+                        : submitState.kind === 'error'
+                          ? '#fecaca'
+                          : '#fde68a',
                   }}
                 >
-                  <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
-                  <span>{submitNotice}</span>
+                  {submitState.kind === 'success' ? (
+                    <CheckCircle2 size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
+                  ) : (
+                    <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
+                  )}
+                  <span>{submitState.text}</span>
                 </div>
               )}
 
@@ -360,12 +454,25 @@ export function ContactSection() {
                   }}
                 >
                   <Mail size={13} />
-                  Mailto fallback mode
+                  {isSupabaseConfigured ? 'Secured via Supabase Edge Function' : 'Mailto fallback mode'}
                 </span>
 
-                <button type="submit" className="glass-btn glass-btn-primary">
-                  <Send size={15} />
-                  Compose via Email Client
+                <button
+                  type="submit"
+                  className="glass-btn glass-btn-primary"
+                  disabled={submitting}
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 size={15} className="animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send size={15} />
+                      {isSupabaseConfigured ? 'Send Message' : 'Compose via Email Client'}
+                    </>
+                  )}
                 </button>
               </div>
             </form>
@@ -375,4 +482,3 @@ export function ContactSection() {
     </section>
   );
 }
-

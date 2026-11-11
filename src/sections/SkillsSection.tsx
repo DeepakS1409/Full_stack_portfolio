@@ -1,6 +1,8 @@
 import { BrainCircuit, Code2, Globe, Sparkles, Wrench } from 'lucide-react';
 import { GlassCard } from '@/components/GlassCard';
 import { SectionHeader } from '@/components/SectionHeader';
+import { usePortfolioQuery } from '@/hooks/usePortfolioQuery';
+import { isSupabaseConfigured } from '@/lib/supabase';
 import { portfolioService } from '@/services/portfolio.service';
 import './sections.css';
 
@@ -12,7 +14,13 @@ const GROUP_ICONS: Record<string, typeof Code2> = {
 };
 
 export function SkillsSection() {
-  const { groups, currentlyLearning } = portfolioService.getSkills();
+  const {
+    data: { groups, currentlyLearning },
+  } = usePortfolioQuery(
+    portfolioService.getSkills,
+    portfolioService.getFallbackSkills(),
+    isSupabaseConfigured,
+  );
 
   return (
     <section id="skills" className="section-wrapper">

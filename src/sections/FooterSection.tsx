@@ -1,8 +1,14 @@
 import { Github } from 'lucide-react';
+import { usePortfolioQuery } from '@/hooks/usePortfolioQuery';
+import { isSupabaseConfigured } from '@/lib/supabase';
 import { portfolioService } from '@/services/portfolio.service';
 
 export function FooterSection() {
-  const profile = portfolioService.getProfile();
+  const { data: profile } = usePortfolioQuery(
+    portfolioService.getProfile,
+    portfolioService.getFallbackProfile(),
+    isSupabaseConfigured,
+  );
 
   return (
     <footer
@@ -44,4 +50,3 @@ export function FooterSection() {
     </footer>
   );
 }
-

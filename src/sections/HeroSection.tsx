@@ -1,11 +1,17 @@
 import { motion } from 'framer-motion';
 import { ArrowDownRight, Compass, FolderGit2, Github, GraduationCap, Sparkles } from 'lucide-react';
 import { HeroThreeScene } from '@/components/HeroThreeScene';
+import { usePortfolioQuery } from '@/hooks/usePortfolioQuery';
+import { isSupabaseConfigured } from '@/lib/supabase';
 import { portfolioService } from '@/services/portfolio.service';
 import './sections.css';
 
 export function HeroSection() {
-  const profile = portfolioService.getProfile();
+  const { data: profile } = usePortfolioQuery(
+    portfolioService.getProfile,
+    portfolioService.getFallbackProfile(),
+    isSupabaseConfigured,
+  );
 
   const scrollToSection = (id: string) => {
     const target = document.getElementById(id);

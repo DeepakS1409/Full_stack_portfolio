@@ -1,6 +1,8 @@
 import { Bot, BrainCircuit, CircuitBoard, Cpu, Layers, Radio, Wifi, Zap } from 'lucide-react';
 import { GlassCard } from '@/components/GlassCard';
 import { SectionHeader } from '@/components/SectionHeader';
+import { usePortfolioQuery } from '@/hooks/usePortfolioQuery';
+import { isSupabaseConfigured } from '@/lib/supabase';
 import { portfolioService } from '@/services/portfolio.service';
 import './sections.css';
 
@@ -16,7 +18,11 @@ const INTEREST_ICONS: Record<string, typeof Cpu> = {
 };
 
 export function TechInterestsSection() {
-  const interests = portfolioService.getTechInterests();
+  const { data: interests } = usePortfolioQuery(
+    portfolioService.getTechInterests,
+    portfolioService.getFallbackTechInterests(),
+    isSupabaseConfigured,
+  );
 
   return (
     <section id="tech-interests" className="section-wrapper">
